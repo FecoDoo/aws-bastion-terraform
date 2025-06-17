@@ -1,12 +1,20 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-data "aws_ami" "amazon-linux-2" {
+data "aws_ami" "ami" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-kernel-*-hvm-*-x86_64-gp2"]
+    values = ["al2023-ami-*-kernel-*-x86_64"]
+  }
+}
+
+locals {
+  tags = {
+    Environment  = "${var.environment}"
+    Organization = "${var.organization}"
+    Region       = "${var.region}"
   }
 }
