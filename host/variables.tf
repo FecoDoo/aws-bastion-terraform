@@ -6,6 +6,12 @@ variable "environment" {}
 
 variable "region" {}
 
+variable "ami" {
+  description = "AMI ID for the bastion host"
+  type        = string
+  default     = "ami-07b5312224c6b20e7"
+}
+
 variable "subnet_id" {}
 
 variable "bastion_host_security_group_ids" {}

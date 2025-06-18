@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT-0
 
 resource "aws_instance" "bastion_host" {
-  ami                     = data.aws_ami.ami.id
+  ami                     = var.ami
   instance_type           = var.instance_type
   subnet_id               = var.subnet_id
   vpc_security_group_ids  = var.bastion_host_security_group_ids

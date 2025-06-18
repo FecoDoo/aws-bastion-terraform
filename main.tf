@@ -35,6 +35,7 @@ module "host" {
   subnet_id                       = module.vpc.private_subnet_id
   bastion_host_security_group_ids = [module.vpc.vpc_host_sg]
   instance_type                   = var.instance_type
+  ami                             = var.ami
 
   tags = local.tags
 
@@ -44,8 +45,8 @@ module "host" {
 }
 
 locals {
-  vpc_private_subnets      = [cidrsubnet(var.vpc_cidr, 1, 0)]
-  vpc_public_subnets       = [cidrsubnet(var.vpc_cidr, 1, 1)]
+  vpc_private_subnets = [cidrsubnet(var.vpc_cidr, 1, 0)]
+  vpc_public_subnets  = [cidrsubnet(var.vpc_cidr, 1, 1)]
 
   tags = {
     Environment  = "${var.environment}"

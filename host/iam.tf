@@ -40,9 +40,9 @@ resource "aws_iam_instance_profile" "bastion_host" {
 locals {
   bastion_host_policy = {
     managed_policy_arns = [
-      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+      "arn:aws:iam::aws:policy/AmazonSSMManagedEC2InstanceDefaultPolicy",
       "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-      "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+      "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
       "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
     ]
   }
