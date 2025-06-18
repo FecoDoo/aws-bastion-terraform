@@ -22,5 +22,7 @@ resource "aws_instance" "bastion_host" {
     http_tokens   = "required"
   }
 
+  user_data = templatefile("${path.root}/data/user_data.sh", {})
+
   tags = var.tags
 }

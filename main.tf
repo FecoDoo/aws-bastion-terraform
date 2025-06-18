@@ -14,9 +14,9 @@ module "vpc" {
   vpc_enable_nat_gateway   = var.vpc_enable_nat_gateway
   vpc_enable_dns_hostnames = var.vpc_enable_dns_hostnames
   vpc_enable_dns_support   = var.vpc_enable_dns_support
-  vpc_enable_vpn_gateway   = var.vpc_enable_vpn_gateway
   vpc_cidr                 = var.vpc_cidr
-  vpc_private_subnets      = var.vpc_private_subnets
+  vpc_private_subnets      = local.vpc_private_subnets
+  vpc_public_subnets       = local.vpc_public_subnets
   vpc_azs                  = [data.aws_availability_zones.available.names[0]]
 
   tags = local.tags
@@ -44,9 +44,13 @@ module "host" {
 }
 
 locals {
+  vpc_private_subnets      = [cidrsubnet(var.vpc_cidr, 1, 0)]
+  vpc_public_subnets       = [cidrsubnet(var.vpc_cidr, 1, 1)]
+
   tags = {
     Environment  = "${var.environment}"
     Organization = "${var.organization}"
     Region       = "${var.region}"
+    Name         = "bastion"
   }
 }
