@@ -4,8 +4,13 @@
 # ------------------------------------------------------------------------------
 # VPC host module
 # ------------------------------------------------------------------------------
-module "bastion-vpc" {
-  source                   = "./bastion-vpc"
+module "vpc" {
+  source = "./vpc"
+
+  organization = var.organization
+  environment  = var.environment
+  region       = var.region
+
   vpc_enable_nat_gateway   = var.vpc_enable_nat_gateway
   vpc_enable_dns_hostnames = var.vpc_enable_dns_hostnames
   vpc_enable_dns_support   = var.vpc_enable_dns_support
@@ -13,20 +18,35 @@ module "bastion-vpc" {
   vpc_cidr                 = var.vpc_cidr
   vpc_private_subnets      = var.vpc_private_subnets
   vpc_azs                  = [data.aws_availability_zones.available.names[0]]
-  aws_region               = data.aws_region.current.name
-  target_environment       = var.target_environment
-  tag_application          = var.tag_application
+
+  tags = local.tags
 }
 
 # ------------------------------------------------------------------------------
 # Bastion host module
 # ------------------------------------------------------------------------------
-module "bastion-host" {
-  source                          = "./bastion-host"
-  tag_application                 = var.tag_application
-  target_environment              = var.target_environment
-  subnet_id                       = module.bastion-vpc.bastion_private_subnet_id
-  bastion_host_security_group_ids = [module.bastion-vpc.vpc_bastion_host_security_group]
+module "host" {
+  source = "./host"
+
+  organization = var.organization
+  environment  = var.environment
+  region       = var.region
+
+  subnet_id                       = module.vpc.private_subnet_id
+  bastion_host_security_group_ids = [module.vpc.vpc_host_sg]
   instance_type                   = var.instance_type
-  bastion_host_policy             = var.bastion_host_policy
+
+  tags = local.tags
+
+  depends_on = [
+    module.vpc
+  ]
+}
+
+locals {
+  tags = {
+    Environment  = "${var.environment}"
+    Organization = "${var.organization}"
+    Region       = "${var.region}"
+  }
 }

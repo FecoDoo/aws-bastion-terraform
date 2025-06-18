@@ -3,10 +3,10 @@
 
 module "vpc" {
   source     = "terraform-aws-modules/vpc/aws"
-  version    = "~> 4.0"
+  version    = "~> 5.0"
   create_vpc = true
 
-  name = "bastion-host-vpc"
+  name = "${var.organization}-${var.environment}-bastion"
 
   cidr            = var.vpc_cidr
   azs             = var.vpc_azs
@@ -18,17 +18,16 @@ module "vpc" {
   enable_dns_hostnames = var.vpc_enable_dns_hostnames
 
   flow_log_file_format = "parquet"
-  tags = {
-    Name = "${var.tag_application}-${var.target_environment}-bastion-host"
-  }
+  
+  tags = var.tags
 }
 
 ###################################################################
 # SSM Messages VPC endpoint
 ###################################################################
-resource "aws_security_group" "vpc_bastion_host_security_group" {
+resource "aws_security_group" "vpc_bastion_sg" {
   #checkov:skip=CKV2_AWS_5:SG is used in VPC Endpoint and will be used by EC2 but not in this module
-  name        = "vpc-bastion-host-security-group"
+  name        = "${var.organization}-${var.environment}-sg"
   description = "Security group for bastion host"
   vpc_id      = module.vpc.vpc_id
   egress {
@@ -44,30 +43,28 @@ resource "aws_security_group" "vpc_bastion_host_security_group" {
 
 resource "aws_vpc_endpoint" "vpc_ssmmessages_vpce" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ssmmessages"
+  service_name        = "com.amazonaws.${var.region}.ssmmessages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
-  security_group_ids  = [aws_security_group.vpc_ssmmessages_vpce_security_group.id]
+  security_group_ids  = [aws_security_group.vpc_ssmmessages_endpoint_sg.id]
 
-  tags = {
-    Name = "${var.tag_application}-${var.target_environment}-vpc-ssmmessages-vpce"
-  }
+  tags = var.tags
 }
 
-resource "aws_security_group" "vpc_ssmmessages_vpce_security_group" {
-  name        = "vpc-ssmmessages-security-group"
+resource "aws_security_group" "vpc_ssmmessages_endpoint_sg" {
+  name        = "${var.organization}-${var.environment}-ssmmessages-sg"
   description = "Security group for SSM Messages VPC endpoint"
   vpc_id      = module.vpc.vpc_id
 }
 
-resource "aws_security_group_rule" "vpc_ssmmessages_vpce_security_group_ingress_rule" {
-  security_group_id        = aws_security_group.vpc_ssmmessages_vpce_security_group.id
+resource "aws_security_group_rule" "vpc_ssmmessages_endpoint_sge" {
+  security_group_id        = aws_security_group.vpc_ssmmessages_endpoint_sg.id
   type                     = "ingress"
   protocol                 = "tcp"
   from_port                = 443
   to_port                  = 443
-  source_security_group_id = aws_security_group.vpc_bastion_host_security_group.id
+  source_security_group_id = aws_security_group.vpc_bastion_sg.id
   description              = "vpc ssm messages vpce security group ingress rule"
 }
 
@@ -77,30 +74,28 @@ resource "aws_security_group_rule" "vpc_ssmmessages_vpce_security_group_ingress_
 
 resource "aws_vpc_endpoint" "vpc_ec2messages_vpce" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ec2messages"
+  service_name        = "com.amazonaws.${var.region}.ec2messages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
-  security_group_ids  = [aws_security_group.vpc_ec2messages_vpce_security_group.id]
+  security_group_ids  = [aws_security_group.vpc_ec2messages_endpoint_sg.id]
 
-  tags = {
-    Name = "${var.tag_application}-${var.target_environment}-vpc-ec2messages-vpce"
-  }
+  tags = var.tags
 }
 
-resource "aws_security_group" "vpc_ec2messages_vpce_security_group" {
-  name        = "vpc-ec2messages-security-group"
+resource "aws_security_group" "vpc_ec2messages_endpoint_sg" {
+  name        = "${var.organization}-${var.environment}-ec2messages-sg"
   description = "Security group for EC2 Messages VPC endpoint"
   vpc_id      = module.vpc.vpc_id
 }
 
-resource "aws_security_group_rule" "vpc_ec2messages_vpce_security_group_ingress_rule" {
-  security_group_id        = aws_security_group.vpc_ec2messages_vpce_security_group.id
+resource "aws_security_group_rule" "vpc_ec2messages_endpoint_sg" {
+  security_group_id        = aws_security_group.vpc_ec2messages_endpoint_sg.id
   type                     = "ingress"
   protocol                 = "tcp"
   from_port                = 443
   to_port                  = 443
-  source_security_group_id = aws_security_group.vpc_bastion_host_security_group.id
+  source_security_group_id = aws_security_group.vpc_bastion_sg.id
   description              = "vpc ec2 messages vpce security group ingress rule"
 }
 
@@ -110,30 +105,28 @@ resource "aws_security_group_rule" "vpc_ec2messages_vpce_security_group_ingress_
 #
 resource "aws_vpc_endpoint" "vpc_ssm_vpce" {
   vpc_id              = module.vpc.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ssm"
+  service_name        = "com.amazonaws.${var.region}.ssm"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = module.vpc.private_subnets
   private_dns_enabled = true
-  security_group_ids  = [aws_security_group.vpc_ssm_vpce_security_group.id]
+  security_group_ids  = [aws_security_group.vpc_ssm_endpoint_sg.id]
 
-  tags = {
-    Name = "${var.tag_application}-${var.target_environment}-vpc-ssm-vpce"
-  }
+  tags = var.tags
 }
 
-resource "aws_security_group" "vpc_ssm_vpce_security_group" {
-  name        = "vpc-ssm-security-group"
+resource "aws_security_group" "vpc_ssm_endpoint_sg" {
+  name        = "${var.organization}-${var.environment}-ssm-sg"
   description = "Security group for SSM VPC endpoint"
   vpc_id      = module.vpc.vpc_id
 }
 
-resource "aws_security_group_rule" "vpc_ssm_vpce_security_group_bastion_host_ingress_rule" {
-  security_group_id        = aws_security_group.vpc_ssm_vpce_security_group.id
+resource "aws_security_group_rule" "vpc_ssm_endpoint_sg" {
+  security_group_id        = aws_security_group.vpc_ssm_endpoint_sg.id
   type                     = "ingress"
   protocol                 = "tcp"
   from_port                = 443
   to_port                  = 443
-  source_security_group_id = aws_security_group.vpc_bastion_host_security_group.id
+  source_security_group_id = aws_security_group.vpc_bastion_sg.id
   description              = "vpc ssm vpce security group ingress rule for bastion host"
 }
 

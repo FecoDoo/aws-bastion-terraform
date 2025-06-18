@@ -15,9 +15,6 @@ variable "instance_type" {
   default = "t3.nano"
 }
 
-variable "bastion_host_policy" {
-  type = object({
-    managed_policy_arns = list(string)
-    inline_policy       = map(any)
-  })
+variable "tags" {
+  type = map(string)
 }

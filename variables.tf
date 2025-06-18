@@ -8,12 +8,18 @@ variable "vpc_enable_dns_hostnames" {}
 
 variable "instance_type" {}
 
-variable "bastion_host_policy" {}
-
 variable "vpc_cidr" {}
 
 variable "vpc_private_subnets" {}
 
-variable "target_environment" {}
+variable "organization" {}
 
-variable "tag_application" {}
+variable "environment" {
+  description = "The name of the organization."
+  default     = "bastion"
+}
+
+variable "region" {
+  description = "The AWS region where the resources will be created."
+  default     = "eu-west-1"
+}

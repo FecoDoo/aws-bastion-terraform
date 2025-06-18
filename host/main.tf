@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-resource "aws_instance" "bastion-host" {
+resource "aws_instance" "bastion_host" {
   ami                     = data.aws_ami.ami.id
   instance_type           = var.instance_type
   subnet_id               = var.subnet_id
@@ -22,5 +22,5 @@ resource "aws_instance" "bastion-host" {
     http_tokens   = "required"
   }
 
-  tags = local.tags
+  tags = var.tags
 }
