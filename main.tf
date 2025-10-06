@@ -23,6 +23,7 @@ module "bastion-vpc" {
 # ------------------------------------------------------------------------------
 module "bastion-host" {
   source                          = "./bastion-host"
+  ami_id                          = var.ami_id
   tag_application                 = var.tag_application
   target_environment              = var.target_environment
   subnet_id                       = module.bastion-vpc.bastion_private_subnet_id

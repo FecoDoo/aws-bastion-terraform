@@ -17,3 +17,5 @@ variable "vpc_private_subnets" {}
 variable "target_environment" {}
 
 variable "tag_application" {}
+
+variable "ami_id" {}
