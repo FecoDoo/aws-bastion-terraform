@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT-0
 
 resource "aws_iam_role" "bastion-host-instance-role" {
-  managed_policy_arns = var.bastion_host_policy.managed_policy_arns
   dynamic "inline_policy" {
     for_each = var.bastion_host_policy.inline_policy
     content {
@@ -23,6 +22,12 @@ resource "aws_iam_role" "bastion-host-instance-role" {
       }
     ]
   })
+}
+
+resource "aws_iam_role_policy_attachment" "bastion-host-managed-policy-attachment" {
+  for_each   = toset(var.bastion_host_policy.managed_policy_arns)
+  role       = aws_iam_role.bastion-host-instance-role.name
+  policy_arn = each.value
 }
 
 resource "aws_iam_instance_profile" "bastion-host-instance-profile" {

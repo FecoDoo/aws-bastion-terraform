@@ -2,12 +2,14 @@
 # SPDX-License-Identifier: MIT-0
 
 resource "aws_instance" "bastion_host_ec2_instance" {
-  ami                     = var.ami_id
-  instance_type           = var.instance_type
-  subnet_id               = var.subnet_id
-  vpc_security_group_ids  = var.bastion_host_security_group_ids
-  iam_instance_profile    = aws_iam_instance_profile.bastion-host-instance-profile.name
-  disable_api_termination = false
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = var.bastion_host_security_group_ids
+  iam_instance_profile        = aws_iam_instance_profile.bastion-host-instance-profile.name
+  associate_public_ip_address = true
+  disable_api_termination     = false
+  region                      = var.region
 
   root_block_device {
     encrypted = false
@@ -16,6 +18,9 @@ resource "aws_instance" "bastion_host_ec2_instance" {
   #checkov:skip=CKV_AWS_135:t3.nano have ebs_optimization enabled by default
   # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html
   monitoring = true
+
+  user_data_base64            = base64encode(file("${path.module}/data/user-data.sh"))
+  user_data_replace_on_change = true
 
   metadata_options {
     http_endpoint = "enabled"

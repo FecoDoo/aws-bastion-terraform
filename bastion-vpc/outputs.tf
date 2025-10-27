@@ -5,8 +5,12 @@ output "bastion_vpc_id" {
   value = module.vpc.vpc_id
 }
 
-output "bastion_private_subnet_id" {
-  value = module.vpc.private_subnets[0]
+output "private_subnets" {
+  value = module.vpc.private_subnets
+}
+
+output "public_subnets" {
+  value = module.vpc.public_subnets
 }
 
 output "vpc_bastion_host_security_group" {

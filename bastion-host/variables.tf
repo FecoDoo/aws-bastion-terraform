@@ -18,3 +18,5 @@ variable "bastion_host_policy" {
     inline_policy       = map(any)
   })
 }
+
+variable "region" {}

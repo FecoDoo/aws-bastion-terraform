@@ -1,5 +1,3 @@
-variable "vpc_enable_nat_gateway" {}
-
 variable "vpc_enable_vpn_gateway" {}
 
 variable "vpc_enable_dns_support" {}
@@ -14,8 +12,12 @@ variable "vpc_cidr" {}
 
 variable "vpc_private_subnets" {}
 
+variable "vpc_public_subnets" {}
+
 variable "target_environment" {}
 
 variable "tag_application" {}
 
 variable "ami_id" {}
+
+variable "region" {}
