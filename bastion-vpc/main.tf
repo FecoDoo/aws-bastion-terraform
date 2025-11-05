@@ -21,7 +21,7 @@ module "vpc" {
   enable_dns_support   = var.vpc_enable_dns_support
   enable_dns_hostnames = var.vpc_enable_dns_hostnames
 
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   default_security_group_ingress = [
     for cidr in var.vpc_public_subnets :

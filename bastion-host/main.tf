@@ -7,7 +7,7 @@ resource "aws_instance" "bastion_host_ec2_instance" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.bastion_host_security_group_ids
   iam_instance_profile        = aws_iam_instance_profile.bastion-host-instance-profile.name
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   disable_api_termination     = false
   region                      = var.region
 
@@ -29,4 +29,8 @@ resource "aws_instance" "bastion_host_ec2_instance" {
   tags = {
     Name = "${var.tag_application}-${var.target_environment}-bastion-host"
   }
+}
+
+resource "aws_eip" "bastion" {
+  instance = aws_instance.bastion_host_ec2_instance.id
 }
