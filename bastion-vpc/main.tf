@@ -41,24 +41,24 @@ module "vpc" {
 }
 
 ###################################################################
-# SSM Messages VPC endpoint
-###################################################################
 resource "aws_security_group" "vpc_bastion_host_security_group" {
   #checkov:skip=CKV2_AWS_5:SG is used in VPC Endpoint and will be used by EC2 but not in this module
   name        = "vpc-bastion-host-security-group"
   description = "Security group for bastion host"
   vpc_id      = module.vpc.vpc_id
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-    description      = "Allow traffic on all ports and ip ranges"
-  }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "bastion_host_security_group_ingress_rule" {
+  security_group_id = aws_security_group.vpc_bastion_host_security_group.id
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+  description       = "Allow SSH access from allowed CIDR blocks"
+}
 
+###################################################################
+# SSM Messages VPC endpoint
 resource "aws_vpc_endpoint" "vpc_ssmmessages_vpce" {
   vpc_id              = module.vpc.vpc_id
   service_name        = "com.amazonaws.${var.aws_region}.ssmmessages"

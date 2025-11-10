@@ -7,7 +7,7 @@ resource "aws_instance" "bastion_host_ec2_instance" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.bastion_host_security_group_ids
   iam_instance_profile        = aws_iam_instance_profile.bastion-host-instance-profile.name
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   disable_api_termination     = false
   region                      = var.region
 
